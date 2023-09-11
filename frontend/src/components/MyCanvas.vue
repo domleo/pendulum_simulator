@@ -13,11 +13,11 @@ export default {
   data() {
     return {
       pendulums: [
-        {id: 1, posx: 100, posy: 200, angular_offset: 0, mass: 0, string_length: 130, radius: 20, r: 255, g:0, b:0},
-        {id: 2, posx: 200, posy: 200, angular_offset: 0, mass: 0, string_length: 130, radius: 20, r: 255, g:255, b:0},
-        {id: 3, posx: 300, posy: 200, angular_offset: 0, mass: 0, string_length: 130, radius: 20, r: 0, g:255, b:255},
-        {id: 4, posx: 400, posy: 200, angular_offset: 0, mass: 0, string_length: 130, radius: 20, r: 0, g:0, b:255},
-        {id: 5, posx: 500, posy: 200, angular_offset: 0, mass: 0, string_length: 130, radius: 20, r: 255, g:0, b:255}
+        {id: 1, dragging: false, posx: 100, posy: 200, angular_offset: 200, mass: 0, string_length: 130, radius: 20, r: 255, g:0, b:0},
+        {id: 2, dragging: false, posx: 200, posy: 200, angular_offset: 200, mass: 0, string_length: 130, radius: 20, r: 255, g:255, b:0},
+        {id: 3, dragging: false, posx: 300, posy: 200, angular_offset: 200, mass: 0, string_length: 130, radius: 20, r: 0, g:255, b:100},
+        {id: 4, dragging: false, posx: 400, posy: 200, angular_offset: 200, mass: 0, string_length: 130, radius: 20, r: 100, g:100, b:255},
+        {id: 5, dragging: false, posx: 500, posy: 200, angular_offset: 200, mass: 0, string_length: 130, radius: 20, r: 255, g:0, b:255}
       ],
       ellipse: {
         posx: 300,
@@ -99,12 +99,20 @@ export default {
           //console.log(pendulumX, pendulumY);
 
           for (const i in self.pendulums) {
+            if (self.pendulums[i].dragging) {
+              self.pendulums[i].posx = p.mouseX;
+              self.pendulums[i].posy = p.mouseY;
+            }
+            //the string
+            p.fill(0);
+            p.line(self.pendulums[i].posx, 75, self.pendulums[i].posx, self.pendulums[i].posy);
             //the circle
             p.fill(self.pendulums[i].r, self.pendulums[i].g, self.pendulums[i].b);
             p.ellipse(self.pendulums[i].posx, self.pendulums[i].posy, self.pendulums[i].radius*2, self.pendulums[i].radius*2);
             //the number id
-            p.fill(220);
+            p.fill(0);
             p.text(self.pendulums[i].id, self.pendulums[i].posx-3, self.pendulums[i].posy+4);
+            
           }
         };
 
@@ -114,10 +122,19 @@ export default {
             self.dragging = true;
             
           }
+          for (const i in self.pendulums) {
+            let d = p.dist(event.offsetX, event.offsetY, self.pendulums[i].posx, self.pendulums[i].posy);
+            if (d < self.pendulums[i].radius) {
+              self.pendulums[i].dragging = true
+            }
+          }
         };
 
         p.mouseReleased = () => {
           self.dragging = false;
+          for (const i in self.pendulums) {
+            self.pendulums[i].dragging = false
+          }
         };
       };
 
