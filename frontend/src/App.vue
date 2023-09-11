@@ -7,12 +7,7 @@ import MyCanvas from './components/MyCanvas.vue'
 <template>
   <main>
     <header>Pendulum Simulator</header>
-    <button>Play</button>
-    <button>Pause</button>
-    <button>Reset</button>
-    <p>
       <my-canvas/>
-    </p>
   </main>
 </template>
 
