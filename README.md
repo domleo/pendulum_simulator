@@ -37,3 +37,6 @@
 - lots to do, probably not going to have enough time to make it nice, just functional
 
 - drag and drop pendulum is odd behavior, how do I determine the anchor once the pendulum moves? angular offset might be fine
+
+- going to assume that the pendulums do not slow down because of a drag coeffient (I feel like that more like how continous robot platform would work)
+- selecting a pendulum and dragging it automatically stops the simulation
