@@ -13,17 +13,19 @@
           <th>Mass</th>
           <th>String Length</th>
           <th>Radius</th>
-          <th>X,Y</th>
+          <th>X</th>
+          <th>Y</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="p in pendulums" :key="p.id">
           <td>{{p.id}}</td>
-          <td>{{p.angular_offset}}</td>
-          <td>{{p.mass}}</td>
-          <td>{{p.string_length}}</td>
-          <td>{{p.radius}}</td>
-          <td>{{p.curr_posx}}, {{p.curr_posy}}</td>
+          <td><input type="number" :value="p.angular_offset" @input="onAngularOffsetChanged($event, p.id)"/></td>
+          <td><input type="number" :value="p.mass" @input="onMassChanged($event, p.id)"/></td>
+          <td><input type="number" :value="p.string_length" @input="onStringLengthChanged($event, p.id)"/></td>
+          <td><input type="number" :value="p.radius" @input="onRadiusChanged($event, p.id)"/></td>
+          <td><input type="number" :value="p.curr_posx" @input="onPosXChanged($event, p.id)"/></td>
+          <td><input type="number" :value="p.curr_posy" @input="onPosYChanged($event, p.id)"/></td>
         </tr>
       </tbody>
     </table>
@@ -36,11 +38,11 @@ export default {
   data() {
     return {
       pendulums: [
-        {id: 1, dragging: false, curr_angle: 200, org_angle: 200, curr_angleVel: 0, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:0, b:0},
-        {id: 2, dragging: false, curr_angle: 200, org_angle: 200, curr_angleVel: 0, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:255, b:0},
-        {id: 3, dragging: false, curr_angle: 200, org_angle: 200, curr_angleVel: 0, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 0, g:255, b:100},
-        {id: 4, dragging: false, curr_angle: 200, org_angle: 200, curr_angleVel: 0, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 100, g:100, b:255},
-        {id: 5, dragging: false, curr_angle: 200, org_angle: 200, curr_angleVel: 0, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:0, b:255}
+        {id: 1, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:0, b:0},
+        {id: 2, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:255, b:0},
+        {id: 3, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 0, g:255, b:100},
+        {id: 4, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 100, g:100, b:255},
+        {id: 5, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:0, b:255}
       ],
       gravity: 0.4
     }
@@ -50,6 +52,49 @@ export default {
     this.interval = null;
   },
   methods: {
+    onAngularOffsetChanged(event, id){
+      //console.log(id, event.target.valueAsNumber)
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) this.pendulums[i].angular_offset = event.target.valueAsNumber
+      }
+      this.pause()
+    },
+    onMassChanged(event, id) {
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) this.pendulums[i].mass = event.target.valueAsNumber
+      }
+      this.pause()
+    },
+    onStringLengthChanged(event, id) {
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) this.pendulums[i].string_length = event.target.valueAsNumber
+      }
+      this.pause()
+    },
+    onRadiusChanged(event, id) {
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) this.pendulums[i].radius = event.target.valueAsNumber
+      }
+      this.pause()
+    },
+    onPosXChanged(event, id) {
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) {
+          this.pendulums[i].curr_posx = event.target.valueAsNumber
+          this.pendulums[i].org_posx = event.target.valueAsNumber
+        }
+      }
+      this.pause()
+    },
+    onPosYChanged(event, id) {
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) {
+          this.pendulums[i].curr_posy = event.target.valueAsNumber
+          this.pendulums[i].org_posy = event.target.valueAsNumber
+        }
+      }
+      this.pause()
+    },
     play() {
       console.log('play')
       if (this.interval) return
@@ -160,5 +205,9 @@ th, td {
 
 th {
     background-color: gray;
+}
+
+input {
+  width: 70px
 }
 </style>
