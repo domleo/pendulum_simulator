@@ -37,27 +37,65 @@ import p5 from 'p5'
 export default {
   data() {
     return {
+      interval: null,
       pendulums: [
-        {id: 1, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:0, b:0},
-        {id: 2, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:255, b:0},
-        {id: 3, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 0, g:255, b:100},
-        {id: 4, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 100, g:100, b:255},
-        {id: 5, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 200, mass: 10, string_length: 10, radius: 20, r: 255, g:0, b:255}
+        {id: 1, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, mass: 10, string_length: 100, radius: 20, anchorX:100, anchorY:75, r: 255, g:0, b:0},
+        {id: 2, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, mass: 10, string_length: 100, radius: 20, anchorX:200, anchorY:75, r: 255, g:255, b:0},
+        {id: 3, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, mass: 10, string_length: 100, radius: 20, anchorX:300, anchorY:75, r: 0, g:255, b:100},
+        {id: 4, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, mass: 10, string_length: 100, radius: 20, anchorX:400, anchorY:75, r: 100, g:100, b:255},
+        {id: 5, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, mass: 10, string_length: 100, radius: 20, anchorX:500, anchorY:75, r: 255, g:0, b:255}
       ],
       gravity: 0.4
     }
   },
   mounted() {
-    this.initPendulumSketch();
-    this.interval = null;
+    this.initPendulumSketch(); //start drawing right away
   },
   methods: {
+    findAnchorPoint(x, y, L) {
+      const sin45 = Math.sqrt(2) / 2;
+      const cos45 = sin45;
+
+      const x_a = x - L * sin45;
+      const y_a = y + L * (1 - cos45);
+
+      return { x: x_a, y: y_a };
+    },
+    findPendulumCoordinates(x_a, y_a, thetaDegrees, L) {
+      const thetaRadians = ((thetaDegrees+180) * Math.PI) / 180; // Convert degrees to radians
+
+      const x = x_a + L * Math.sin(thetaRadians);
+      const y = y_a - L * Math.cos(thetaRadians);
+
+      return { x: x, y: y };
+    },
+    calculateNewXYwithAngularOffset(id) {
+      //find the anchor, since that doesn't change here
+      for (const i in this.pendulums) {
+        if (this.pendulums[i].id === id) {
+          const pendulum = this.pendulums[i]
+          //const anchor_point = this.findAnchorPoint(pendulum.curr_posx, pendulum.curr_posy, pendulum.string_length)
+          //console.log(anchor_point)
+          const newCoor = this.findPendulumCoordinates(pendulum.anchorX, pendulum.anchorY, pendulum.angular_offset, pendulum.string_length)
+          pendulum.curr_posx = newCoor.x// + anchor_point.x
+          pendulum.org_posx  = newCoor.x// + anchor_point.x
+          pendulum.curr_posy = newCoor.y// + anchor_point.y
+          pendulum.org_posy  = newCoor.y// + anchor_point.y
+          break
+        }
+      }
+      
+    },
     onAngularOffsetChanged(event, id){
       //console.log(id, event.target.valueAsNumber)
       for (const i in this.pendulums) {
-        if (this.pendulums[i].id === id) this.pendulums[i].angular_offset = event.target.valueAsNumber
+        if (this.pendulums[i].id === id) {
+          this.pendulums[i].angular_offset = event.target.valueAsNumber
+          this.calculateNewXYwithAngularOffset(id)
+        }
       }
       this.pause()
+      
     },
     onMassChanged(event, id) {
       for (const i in this.pendulums) {
@@ -157,7 +195,7 @@ export default {
             }
             //the string
             p.fill(0);
-            p.line(self.pendulums[i].org_posx, 75, self.pendulums[i].curr_posx, self.pendulums[i].curr_posy);
+            p.line(self.pendulums[i].anchorX, self.pendulums[i].anchorY, self.pendulums[i].curr_posx, self.pendulums[i].curr_posy);
             //the circle
             p.fill(self.pendulums[i].r, self.pendulums[i].g, self.pendulums[i].b);
             p.ellipse(self.pendulums[i].curr_posx, self.pendulums[i].curr_posy, self.pendulums[i].radius*2, self.pendulums[i].radius*2);

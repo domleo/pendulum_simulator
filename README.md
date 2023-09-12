@@ -41,3 +41,8 @@
 - going to assume that the pendulums do not slow down because of a drag coeffient (I feel like that more like how continous robot platform would work)
 - selecting a pendulum and dragging it automatically stops the simulation
 - since the objects are contained within a array, we need to create custom handlers for each field to make sure the correct pendulum was updated
+- updating the string length should update the starting x,y coordinates of the pendulum
+- updating the angular offset, needs to update the x,y coordinates
+- do the anchor points move? yes
+- updating the x,y coordinates should update the string length
+- updating the radius should update the string length
