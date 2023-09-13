@@ -1,6 +1,4 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
 import MyCanvas from './components/MyCanvas.vue'
 </script>
 
@@ -22,7 +20,4 @@ header {
   margin: 0 auto 2rem;
 }
 
-@media (min-width: 1024px) {
-
-}
 </style>
