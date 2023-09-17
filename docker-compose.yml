@@ -11,6 +11,18 @@ services:
     volumes:
       - ./frontend:/app
 
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    user: 1000:1000
+    environment:
+      - TZ=America/Montreal
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+     - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:r
+
   backend1:
     container_name: backend1
     build:
