@@ -43,6 +43,8 @@
 - since the objects are contained within a array, we need to create custom handlers for each field to make sure the correct pendulum was updated
 - updating the string length should update the starting x,y coordinates of the pendulum
 - updating the angular offset, needs to update the x,y coordinates
-- do the anchor points move? yes
+- do the anchor points move? yes, but they need to be entered
 - updating the x,y coordinates should update the string length
-- updating the radius should update the string length
+- updating the radius should update the string length (no need, we will be calculating that the center of the mass is where the string is connected)
+- updating the anchorx should update the x coordinate of the pendulum (i.e. it follows, else we need to update the string length and angular offset)
+
