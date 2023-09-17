@@ -48,3 +48,8 @@
 - updating the radius should update the string length (no need, we will be calculating that the center of the mass is where the string is connected)
 - updating the anchorx should update the x coordinate of the pendulum (i.e. it follows, else we need to update the string length and angular offset)
 
+## Docker
+
+``` bash
+docker compose up --build
+```
