@@ -134,16 +134,21 @@ export default {
       const y = y2 - y1
       return Math.sqrt((x*x)+(y*y))
     },
+    getAngularOffset(x1, y1, x2, y2) {
+      const dx = x2 - x1
+      const dy = y2 - y1
+      const angleRadians = Math.atan2(dy, dx)
+      return (angleRadians * (180 / Math.PI)) - 90.0 //the -90 is to make the angle relative where straight down is zero degrees
+    },
     onPosXChanged(event, id) {
       this.pause()
       for (const i in this.pendulums) {
         if (this.pendulums[i].id === id) {
           const pendulum = this.pendulums[i]
-          const string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, event.target.valueAsNumber, pendulum.org_posy)
-          //const new_angular_offset
           pendulum.curr_posx = event.target.valueAsNumber
           pendulum.org_posx  = event.target.valueAsNumber
-          pendulum.string_length = string_length
+          pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, event.target.valueAsNumber, pendulum.org_posy)
+          pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, event.target.valueAsNumber, pendulum.org_posy)
           break
         }
       }
@@ -153,11 +158,10 @@ export default {
       for (const i in this.pendulums) {
         if (this.pendulums[i].id === id) {
           const pendulum = this.pendulums[i]
-          const string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, event.target.valueAsNumber)
-          //const new_angular_offset
           pendulum.curr_posy = event.target.valueAsNumber
           pendulum.org_posy  = event.target.valueAsNumber
-          pendulum.string_length = string_length
+          pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, event.target.valueAsNumber)
+          pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, event.target.valueAsNumber)
           break
         }
       }
