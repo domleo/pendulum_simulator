@@ -4,11 +4,13 @@
   "description": "pendulum sim backend",
   "main": "index.js",
   "scripts": {
+    "start": "npm install && nodemon -L index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Domenico Leopardi",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mqtt": "^5.0.5"
   }
 }
