@@ -80,8 +80,6 @@ export default {
       for (const i in this.pendulums) {
         if (this.pendulums[i].id === id) {
           const pendulum = this.pendulums[i]
-          //const anchor_point = this.findAnchorPoint(pendulum.curr_posx, pendulum.curr_posy, pendulum.string_length)
-          //console.log(anchor_point)
           const newCoor = this.findPendulumCoordinates(pendulum.anchorX, pendulum.anchorY, pendulum.angular_offset, pendulum.string_length)
           pendulum.curr_posx = newCoor.x
           pendulum.org_posx  = newCoor.x
@@ -140,31 +138,32 @@ export default {
       const angleRadians = Math.atan2(dy, dx)
       return (angleRadians * (180 / Math.PI)) - 90.0 //the -90 is to make the angle relative where straight down is zero degrees
     },
-    onPosXChanged(event, id) {
-      this.pause()
+    updateXY(id, x, y) {
+      console.log('updateXY', id, x, y)
       for (const i in this.pendulums) {
         if (this.pendulums[i].id === id) {
           const pendulum = this.pendulums[i]
-          pendulum.curr_posx = event.target.valueAsNumber
-          pendulum.org_posx  = event.target.valueAsNumber
-          pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, event.target.valueAsNumber, pendulum.org_posy)
-          pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, event.target.valueAsNumber, pendulum.org_posy)
+          if (x){
+            pendulum.curr_posx = x
+            pendulum.org_posx  = x
+          }
+          if (y) {
+            pendulum.curr_posy = y
+            pendulum.org_posy  = y
+          }
+          pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, pendulum.org_posy)
+          pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, pendulum.org_posy)
           break
         }
       }
     },
+    onPosXChanged(event, id) {
+      this.pause()
+      this.updateXY(id, event.target.valueAsNumber, null)
+    },
     onPosYChanged(event, id) {
       this.pause()
-      for (const i in this.pendulums) {
-        if (this.pendulums[i].id === id) {
-          const pendulum = this.pendulums[i]
-          pendulum.curr_posy = event.target.valueAsNumber
-          pendulum.org_posy  = event.target.valueAsNumber
-          pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, event.target.valueAsNumber)
-          pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, event.target.valueAsNumber)
-          break
-        }
-      }
+      this.updateXY(id, null, event.target.valueAsNumber)
     },
     onAnchorXChanged(event, id) {
       this.pause()
@@ -237,10 +236,7 @@ export default {
           //redraw pendulums with new positions
           for (const i in self.pendulums) {
             if (self.pendulums[i].dragging) {
-              self.pendulums[i].org_posx = p.mouseX;
-              self.pendulums[i].org_posy = p.mouseY;
-              self.pendulums[i].curr_posx = p.mouseX;
-              self.pendulums[i].curr_posy = p.mouseY;
+              self.updateXY(self.pendulums[i].id, p.mouseX, p.mouseY);
             }
             //the string
             p.fill(0);
@@ -261,6 +257,7 @@ export default {
             if (d < self.pendulums[i].radius) {
               self.pause()
               self.pendulums[i].dragging = true
+              break
             }
           }
         };
