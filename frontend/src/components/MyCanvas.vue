@@ -45,12 +45,19 @@ export default {
     return {
       interval: null,
       pendulums: [
-        {id: 1, dragging: false, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
-        {id: 2, dragging: false, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
-        {id: 3, dragging: false, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
-        {id: 4, dragging: false, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
-        {id: 5, dragging: false, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
+        {id: 1, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
+        {id: 2, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
+        {id: 3, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
+        {id: 4, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
+        {id: 5, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
       ],
+      drag_pendulums: [
+        {id: 1, dragging: false },
+        {id: 2, dragging: false },
+        {id: 3, dragging: false },
+        {id: 4, dragging: false },
+        {id: 5, dragging: false }
+      ]
       //gravity: 0.4
     }
   },
@@ -145,8 +152,8 @@ export default {
       const angleRadians = Math.atan2(dy, dx)
       return (angleRadians * (180 / Math.PI)) - 90.0 //the -90 is to make the angle relative where straight down is zero degrees
     },
-    updateXY(id, x, y) {
-      console.log('updateXY', id, x, y)
+    async updateXY(id, x, y) {
+      //console.log('updateXY', id, x, y)
       for (const i in this.pendulums) {
         if (this.pendulums[i].id === id) {
           const pendulum = this.pendulums[i]
@@ -160,6 +167,7 @@ export default {
           }
           pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, pendulum.org_posy)
           pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, pendulum.org_posy)
+          this.setStartPos()
           break
         }
       }
@@ -301,7 +309,7 @@ export default {
 
           //redraw pendulums with new positions
           for (const i in self.pendulums) {
-            if (self.pendulums[i].dragging) {
+            if (self.drag_pendulums[i].dragging) {
               self.updateXY(self.pendulums[i].id, p.mouseX, p.mouseY);
             }
             //the string
@@ -318,19 +326,21 @@ export default {
         };
 
         p.mousePressed = () => {
+          console.log('mousePressed')
           for (const i in self.pendulums) {
             let d = p.dist(p.mouseX, p.mouseY, self.pendulums[i].curr_posx, self.pendulums[i].curr_posy);
             if (d < self.pendulums[i].radius) {
               self.pause()
-              self.pendulums[i].dragging = true
+              self.drag_pendulums[i].dragging = true
               break
             }
           }
         };
 
         p.mouseReleased = () => {
+          console.log('mouseReleased')
           for (const i in self.pendulums) {
-            self.pendulums[i].dragging = false
+            self.drag_pendulums[i].dragging = false
           }
         };
       };
