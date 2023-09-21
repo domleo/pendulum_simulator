@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT
 const routes = require('./routes')
-const _ = require('./mqtt') //this is just to get it to start connecting
+const mqtt = require('./mqtt') //this is just to get it to start connecting
 const state_machine = require('./state_machine')
 const logger = require('pino')()
 
@@ -18,7 +18,7 @@ async function bootstrap() {
   app.use('/', routes)
 
   app.listen(port, () => {
-    logger.info(` MAIN | pendulum sim ${process.env.NAME} listening on port ${port}`)
+    logger.info(` MAIN | ${process.env.NAME} listening on port ${port}`)
   })
 
   state_machine.start()
@@ -37,6 +37,7 @@ async function exitHandler(options, exitCode) {
   }
   if (options.exit) {
     logger.info(` MAIN | Stopping ${process.env.NAME}`)
+    mqtt.end()
     process.exit()
   }
 }

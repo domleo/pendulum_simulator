@@ -8,7 +8,7 @@ const client = mqtt.connect('tcp://mosquitto:1883', {
 client.on("connect", () => {
   client.subscribe("presence/#", (err) => {
     if (!err) {
-      client.publish(`presence/${process.env.NAME}`, "Hello mqtt");
+      client.publish(`${process.env.NAME}`, Date().toString());
     }
   });
 });

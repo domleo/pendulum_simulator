@@ -16,7 +16,7 @@ router.post('/api/set_starting', (req, res) => {
 })
 
 router.get('/api/get_position', (req, res) => {
-  logger.info(`ROUTE | get | /api/get_position`)
+  //logger.info(`ROUTE | get | /api/get_position`)
   res.send(state_machine.getCurrent())
 })
 

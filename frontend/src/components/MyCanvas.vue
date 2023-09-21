@@ -23,7 +23,7 @@
       <tbody>
         <tr v-for="p in pendulums" :key="p.id">
           <td>{{p.id}}</td>
-          <td><input type="number" :value="p.angular_offset"  @input="onAngularOffsetChanged($event, p.id)"/></td>
+          <td><input type="number" :value="p.curr_angoff"     @input="onAngularOffsetChanged($event, p.id)"/></td>
           <td><input type="number" :value="p.mass"            @input="onMassChanged($event, p.id)"/></td>
           <td><input type="number" :value="p.string_length"   @input="onStringLengthChanged($event, p.id)"/></td>
           <td><input type="number" :value="p.radius"          @input="onRadiusChanged($event, p.id)"/></td>
@@ -39,22 +39,29 @@
 
 <script>
 import p5 from 'p5'
+import axios from 'axios'
 export default {
   data() {
     return {
       interval: null,
       pendulums: [
-        {id: 1, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255, g:0, b:0},
-        {id: 2, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255, g:255, b:0},
-        {id: 3, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0, g:255, b:100},
-        {id: 4, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100, g:100, b:255},
-        {id: 5, dragging: false, curr_angle: Math.PI/4, org_angle: Math.PI/3, curr_angleVel: 0, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255, g:0, b:255}
+        {id: 1, dragging: false, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
+        {id: 2, dragging: false, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
+        {id: 3, dragging: false, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
+        {id: 4, dragging: false, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
+        {id: 5, dragging: false, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
       ],
-      gravity: 0.4
+      //gravity: 0.4
     }
   },
   mounted() {
+    this.setStartPos()
     this.initPendulumSketch(); //start drawing right away
+    //this is continuosly get the positions of the pendulums, regardless if the animation is in effect
+    this.interval = setInterval(() => {
+      //get updated positions from processes
+      this.getPos()
+    }, 16.7) //16.7 for about 60 fps
   },
   methods: {
     findAnchorPoint(x, y, L) {
@@ -179,42 +186,101 @@ export default {
         }
       }
     },
-    play() {
+    async setStartPos() {
+      try {
+        const req1 = axios.post('http://localhost:3001/api/set_starting', this.pendulums[0])
+        await Promise.all([req1])
+        //const req2 = axios.post('http://localhost:3002/api/set_starting', this.pendulums[1])
+        //const req3 = axios.post('http://localhost:3003/api/set_starting', this.pendulums[2])
+        //const req4 = axios.post('http://localhost:3004/api/set_starting', this.pendulums[3])
+        //const req5 = axios.post('http://localhost:3005/api/set_starting', this.pendulums[4])
+        //await Promise.all([req1, req2, req3, req4, req5])
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async getPos() {
+      try {
+        const req1 = axios.get('http://localhost:3001/api/get_position')
+        const [res1] = await Promise.all([req1])
+        //console.log(res1)
+        this.pendulums[0] = res1.data
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async play() {
       console.log('play')
-      if (this.interval) return
-      this.interval = setInterval(() => {
-        for (const i in this.pendulums) {
-          //base formula just to animate the pendulum just to prove the UI works, will remove later.
-          const torque = -this.pendulums[i].string_length * this.gravity * Math.sin(this.pendulums[i].curr_angle)
-          const angularAcceleration = torque / (this.pendulums[i].string_length * this.pendulums[i].string_length)
-          this.pendulums[i].curr_angleVel += angularAcceleration
-          this.pendulums[i].curr_angle += this.pendulums[i].curr_angleVel
+      try {
+        //await this.setStartPos()
 
-          this.pendulums[i].curr_posx = this.pendulums[i].org_posx + this.pendulums[i].string_length * Math.sin(this.pendulums[i].curr_angle)
-          this.pendulums[i].curr_posy = this.pendulums[i].org_posy + this.pendulums[i].string_length * Math.cos(this.pendulums[i].curr_angle)
-        }
-        //get updated positions from processes
-      }, 16.7) //16.7 for about 60 fps
+        const reqStart1 = axios.post('http://localhost:3001/api/start')
+        await Promise.all([reqStart1])
+        //const reqStart2 = axios.post('http://localhost:3002/api/start')
+        //const reqStart3 = axios.post('http://localhost:3003/api/start')
+        //const reqStart4 = axios.post('http://localhost:3004/api/start')
+        //const reqStart5 = axios.post('http://localhost:3005/api/start')
+        //await Promise.all([reqStart1, reqStart2, reqStart3, reqStart4, reqStart5])
+      } catch (err) {
+        console.error(err)
+      }
+      //if (this.interval) return
+      //this.interval = setInterval(() => {
+      //  for (const i in this.pendulums) {
+      //    //base formula just to animate the pendulum just to prove the UI works, will remove later.
+      //    const torque = -this.pendulums[i].string_length * this.gravity * Math.sin(this.pendulums[i].curr_angle)
+      //    const angularAcceleration = torque / (this.pendulums[i].string_length * this.pendulums[i].string_length)
+      //    this.pendulums[i].curr_angleVel += angularAcceleration
+      //    this.pendulums[i].curr_angle += this.pendulums[i].curr_angleVel
+      //    this.pendulums[i].curr_posx = this.pendulums[i].org_posx + this.pendulums[i].string_length * Math.sin(this.pendulums[i].curr_angle)
+      //    this.pendulums[i].curr_posy = this.pendulums[i].org_posy + this.pendulums[i].string_length * Math.cos(this.pendulums[i].curr_angle)
+      //  }
+      //  //get updated positions from processes
+      //}, 16.7) //16.7 for about 60 fps
     },
-    pause () {
+    async pause () {
       console.log('pause')
-      if (this.interval) {
-        clearInterval(this.interval)
-        this.interval = null
+      try {
+        const req1 = axios.post('http://localhost:3001/api/pause')
+        await Promise.all([req1])
+        //const req2 = axios.post('http://localhost:3002/api/pause')
+        //const req3 = axios.post('http://localhost:3003/api/pause')
+        //const req4 = axios.post('http://localhost:3004/api/pause')
+        //const req5 = axios.post('http://localhost:3005/api/pause')
+        //await Promise.all([req1, req2, req3, req4, req5])
+      } catch (err) {
+        console.error(err)
       }
+      //if (this.interval) {
+      //  clearInterval(this.interval)
+      //  this.interval = null
+      //}
     },
-    reset() {
-       console.log('reset')
-      if (this.interval) {
-        clearInterval(this.interval)
-        this.interval = null
+    async reset() {
+      console.log('reset')
+      try {
+        const req1 = axios.post('http://localhost:3001/api/reset')
+        await Promise.all([req1])
+        //const req2 = axios.post('http://localhost:3002/api/reset')
+        //const req3 = axios.post('http://localhost:3003/api/reset')
+        //const req4 = axios.post('http://localhost:3004/api/reset')
+        //const req5 = axios.post('http://localhost:3005/api/reset')
+        //await Promise.all([req1, req2, req3, req4, req5])
+      } catch (err) {
+        console.error(err)
       }
-      for (const i in this.pendulums) {
-        this.pendulums[i].curr_posx = this.pendulums[i].org_posx
-        this.pendulums[i].curr_posy = this.pendulums[i].org_posy
-        this.pendulums[i].curr_angle = this.pendulums[i].org_angle
-        this.pendulums[i].curr_angularVel = 0
-      }
+      
+      //if (this.interval) {
+      //  clearInterval(this.interval)
+      //  this.interval = null
+      //}
+      //for (const i in this.pendulums) {
+      //  this.pendulums[i].curr_posx = this.pendulums[i].org_posx
+      //  this.pendulums[i].curr_posy = this.pendulums[i].org_posy
+      //  this.pendulums[i].curr_angle = this.pendulums[i].org_angle
+      //  this.pendulums[i].curr_angoff this.pendulums[i].angular_offset
+      //  //this.pendulums[i].curr_angularVel = 0
+      //}
     },
     initPendulumSketch() {
       let self = this
