@@ -159,7 +159,7 @@ export default {
       const dx = x2 - x1
       const dy = y2 - y1
       const angleRadians = Math.atan2(dy, dx)
-      return (angleRadians * (180 / Math.PI))
+      return (angleRadians * (180 / Math.PI))- 90.0 //the -90 is to make the angle relative where straight down is zero degrees
     },
     async updateXY(id, x, y) {
       //console.log('updateXY', id, x, y)
