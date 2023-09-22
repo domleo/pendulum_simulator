@@ -57,8 +57,8 @@ class StateMachine {
     const torque = -(momentOfInertia) * g * Math.sin(this.theta) 
     const angularAcc = torque / momentOfInertia //(this.curr_data.string_length * this.curr_data.string_length)
 
-    this.angleVelo += angularAcc
-    this.theta += this.angleVelo
+    this.angleVelo += angularAcc * dt
+    this.theta += this.angleVelo * dt
     this.curr_data.curr_angoff = this.theta * (180/Math.PI)
 
     //this.angleVelo *= 0.99

@@ -9,14 +9,14 @@ services:
     ports:
       - "3000:3000" 
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app:rw
     depends_on:
       - mosquitto
       - backend1
-      - backend2
-      - backend3
-      - backend4
-      - backend5
+      #- backend2
+      #- backend3
+      #- backend4
+      #- backend5
 
   mosquitto:
     container_name: mosquitto
@@ -28,7 +28,7 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-     - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:rw
+     - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   backend1:
     container_name: backend1
@@ -45,72 +45,72 @@ services:
     depends_on:
       - mosquitto
 
-  backend2:
-    container_name: backend2
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "3002:3002"
-    volumes:
-      - ./backend:/app 
-    environment:
-      - PORT=3002
-      - NAME=backend2
-    depends_on:
-      - mosquitto
-      - backend1
+  #backend2:
+  #  container_name: backend2
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "3002:3002"
+  #  volumes:
+  #    - ./backend:/app 
+  #  environment:
+  #    - PORT=3002
+  #    - NAME=backend2
+  #  depends_on:
+  #    - mosquitto
+  #    - backend1
 
-  backend3:
-    container_name: backend3
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "3003:3003"
-    volumes:
-      - ./backend:/app 
-    environment:
-      - PORT=3003
-      - NAME=backend3
-    depends_on:
-      - mosquitto
-      - backend1
-      - backend2
+  #backend3:
+  #  container_name: backend3
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "3003:3003"
+  #  volumes:
+  #    - ./backend:/app 
+  #  environment:
+  #    - PORT=3003
+  #    - NAME=backend3
+  #  depends_on:
+  #    - mosquitto
+  #    - backend1
+  #    - backend2
 
-  backend4:
-    container_name: backend4
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "3004:3004"
-    volumes:
-      - ./backend:/app 
-    environment:
-      - PORT=3004
-      - NAME=backend4
-    depends_on:
-      - mosquitto
-      - backend1
-      - backend2
-      - backend3
+  #backend4:
+  #  container_name: backend4
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "3004:3004"
+  #  volumes:
+  #    - ./backend:/app 
+  #  environment:
+  #    - PORT=3004
+  #    - NAME=backend4
+  #  depends_on:
+  #    - mosquitto
+  #    - backend1
+  #    - backend2
+  #    - backend3
     
-  backend5:
-    container_name: backend5
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "3005:3005"
-    volumes:
-      - ./backend:/app 
-    environment:
-      - PORT=3005
-      - NAME=backend5
-    depends_on:
-      - mosquitto
-      - backend1
-      - backend2
-      - backend3
-      - backend4
+  #backend5:
+  #  container_name: backend5
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "3005:3005"
+  #  volumes:
+  #    - ./backend:/app 
+  #  environment:
+  #    - PORT=3005
+  #    - NAME=backend5
+  #  depends_on:
+  #    - mosquitto
+  #    - backend1
+  #    - backend2
+  #    - backend3
+  #    - backend4

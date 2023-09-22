@@ -311,7 +311,7 @@ export default {
         };
 
         p.mousePressed = () => {
-          console.log('mousePressed')
+          //console.log('mousePressed')
           for (const i in self.pendulums) {
             let d = p.dist(p.mouseX, p.mouseY, self.pendulums[i].curr_posx, self.pendulums[i].curr_posy);
             if (d < self.pendulums[i].radius) {
@@ -323,7 +323,7 @@ export default {
         };
 
         p.mouseReleased = () => {
-          console.log('mouseReleased')
+          //console.log('mouseReleased')
           for (const i in self.pendulums) {
             self.drag_pendulums[i].dragging = false
           }
