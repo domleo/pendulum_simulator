@@ -8,16 +8,16 @@ const client = mqtt.connect('tcp://mosquitto:1883', {
 client.on("connect", () => {
   client.subscribe("presence/#", (err) => {
     if (!err) {
-      client.publish(`${process.env.NAME}`, Date().toString());
+      client.publish(`${process.env.NAME}`, Date().toString())
     }
-  });
-});
+    if (err) logger.error(err)
+  })
+})
 
-client.on("message", (topic, message) => {
+client.on("message", async (topic, message) => {
   // message is Buffer
   logger.info(` MQTT | on message | topic : '${topic}' | message : '${message.toString()}'`)
-  //client.end();
-});
+})
 
 
 module.exports = client

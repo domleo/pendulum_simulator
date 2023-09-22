@@ -136,9 +136,34 @@ class StateMachine {
     this.setStartPositions(this.start_data)
   }
 
+  stop() {
+    logger.warn("   SM | got STOP")
+    mqtt.publish(`${process.env.NAME}/animation`, 'stop')
+    this.currentState = 'idle'
+  }
 
 }
 
 const machine = new StateMachine()
+
+mqtt.on("connect", () => { 
+  mqtt.subscribe("pendulum_sim", (err) => {
+    if (err) logger.error(err)
+  })
+})
+
+mqtt.on("message", async (topic, message) => {
+  if (topic === 'pendulum_sim') {
+    if (message.toString() === 'STOP') {
+      machine.interrupt()
+    }
+    if (message.toString() === 'RESTART') {
+      machine.restart()
+      await sleep(5000)
+      machine.start_sim() 
+    }
+  }
+})
+
 
 module.exports = machine
