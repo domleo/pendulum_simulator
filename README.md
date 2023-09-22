@@ -1,5 +1,17 @@
 # Pendulum Simulator
 
+## Exexccuting project
+
+You'll need dockerr and docker compose to run the project. But everything should be self contained.
+
+``` bash
+> docker compose up --build
+```
+
+Once the project is running on your local system, open a browser and go to [http://localhost:3000/]
+
+## Things that don't work correctly
+
 ## breaking down tasks
 
 - rest intface for setup of pendulums

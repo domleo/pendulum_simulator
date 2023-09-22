@@ -45,11 +45,11 @@ export default {
     return {
       interval: null,
       pendulums: [
-        {id: 1, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
-        {id: 2, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
-        {id: 3, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
-        {id: 4, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
-        {id: 5, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
+        //{id: 1, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
+        //{id: 2, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
+        //{id: 3, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
+        //{id: 4, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
+        //{id: 5, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
       ],
       drag_pendulums: [
         {id: 1, dragging: false },
@@ -62,7 +62,7 @@ export default {
     }
   },
   mounted() {
-    this.setStartPos()
+    //this.setStartPos()
     this.initPendulumSketch(); //start drawing right away
     //this is continuosly get the positions of the pendulums, regardless if the animation is in effect
     this.interval = setInterval(() => {
