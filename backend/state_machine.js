@@ -1,5 +1,6 @@
 const logger = require('pino')()
 const mqtt = require('./mqtt')
+const axios = require('axios')
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -63,6 +64,14 @@ class StateMachine {
 
   }
 
+  areCirclesOverlapping(circleA, circleB) {
+    const dx = circleB.x - circleA.x;
+    const dy = circleB.y - circleA.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    return distance < circleA.r + circleB.r;
+  }
+
   async nextState() {
     mqtt.publish(`${process.env.NAME}/State`, this.currentState)
     switch (this.currentState) {
@@ -74,12 +83,37 @@ class StateMachine {
         break
       case 'step':
         //log('State : step')
-        this.currentState = 'wait'
+        this.currentState = 'collison_detection'
         this.step(0.01) //because of 10Hz
         mqtt.publish(`${process.env.NAME}/current`, JSON.stringify(this.curr_data))
         break
       case 'collison_detection':
         //log('State : collison_detection')
+        
+        const req1 = axios.get('http://backend1:3001/api/get_position')
+        const req2 = axios.get('http://backend2:3002/api/get_position')
+        const req3 = axios.get('http://backend3:3003/api/get_position')
+        const req4 = axios.get('http://backend4:3004/api/get_position')
+        const req5 = axios.get('http://backend5:3005/api/get_position')
+        const ress = await Promise.all([req1, req2, req3, req4, req5])
+        let circles = []
+        for (let i = 0; i < ress.length; i++) {
+          circles.push({x: ress[i].data.curr_posx, y: ress[i].data.curr_posy, r: ress[i].data.radius*1.3}) //10% more radius
+        }
+
+        for (let i = 0; i < circles.length; i++) {
+          for (let j = 0; j < circles.length; j++) { 
+            if (i !== j){
+              if (this.areCirclesOverlapping(circles[i], circles[j])) {
+                mqtt.publish(`${process.env.NAME}/collision`, `circle ${i+1} & ${j+1} `)
+                mqtt.publish(`pendulum_sim`, 'STOP')
+                await sleep(5000)
+                mqtt.publish(`pendulum_sim`, 'RESTART')
+                break
+              }
+            }
+          }
+        }
         this.currentState = 'wait'
         break
       case 'wait':
@@ -159,7 +193,6 @@ mqtt.on("message", async (topic, message) => {
     }
     if (message.toString() === 'RESTART') {
       machine.restart()
-      await sleep(5000)
       machine.start_sim() 
     }
   }
