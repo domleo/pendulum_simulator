@@ -106,14 +106,13 @@ class StateMachine {
               if (this.areCirclesOverlapping(circles[i], circles[j])) {
                 mqtt.publish(`${process.env.NAME}/collision`, `circle ${i+1} & ${j+1} `)
                 mqtt.publish(`pendulum_sim`, 'STOP')
-                await sleep(5000)
-                mqtt.publish(`pendulum_sim`, 'RESTART')
+                this.currentState = 'stop'
                 break
               }
             }
           }
         }
-        if (this.currentState !== 'idle') this.currentState = 'wait'
+        if (this.currentState !== 'idle' && this.currentState !== 'stop') this.currentState = 'wait'
         break
       case 'wait':
         //log('State : wait')
@@ -129,6 +128,10 @@ class StateMachine {
         this.currentState = 'end'
         console.log('State machine restarted.')
         break
+      case 'stop':
+        log('State : stop')
+        await sleep(5000)
+        mqtt.publish(`pendulum_sim`, 'RESTART')
       default:
             console.error('Unknown state:', this.currentState)
     }
@@ -188,7 +191,7 @@ mqtt.on("connect", () => {
 mqtt.on("message", async (topic, message) => {
   if (topic === 'pendulum_sim') {
     if (message.toString() === 'STOP') {
-      machine.interrupt()
+      machine.stop()
     }
     if (message.toString() === 'RESTART') {
       machine.restart()
