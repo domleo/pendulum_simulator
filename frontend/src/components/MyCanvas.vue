@@ -45,11 +45,11 @@ export default {
     return {
       interval: null,
       pendulums: [
-        {id: 1, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
-        {id: 2, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
-        {id: 3, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
-        {id: 4, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
-        {id: 5, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 0, curr_angoff: 0, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
+        {id: 1, curr_posx: 100, curr_posy: 200, org_posx: 100, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:100, anchorY:75, r: 255,  g:0,   b:0  },
+        {id: 2, curr_posx: 200, curr_posy: 200, org_posx: 200, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:200, anchorY:75, r: 255,  g:255, b:0  },
+        {id: 3, curr_posx: 300, curr_posy: 200, org_posx: 300, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:300, anchorY:75, r: 0,    g:255, b:100},
+        {id: 4, curr_posx: 400, curr_posy: 200, org_posx: 400, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:400, anchorY:75, r: 100,  g:100, b:255},
+        {id: 5, curr_posx: 500, curr_posy: 200, org_posx: 500, org_posy: 200, angular_offset: 90, curr_angoff: 90, mass: 10, string_length: 125, radius: 20, anchorX:500, anchorY:75, r: 255,  g:0,   b:255}
       ],
       drag_pendulums: [
         {id: 1, dragging: false },
@@ -68,7 +68,7 @@ export default {
     this.interval = setInterval(() => {
       //get updated positions from processes
       this.getPos()
-    }, 16.7) //16.7 for about 60 fps
+    }, 41.666) //16.7 for about 60 fps, 41.666 is about 24 fps
   },
   methods: {
     findAnchorPoint(x, y, L) {
@@ -104,12 +104,14 @@ export default {
       }
       
     },
-    onAngularOffsetChanged(event, id){
+    async onAngularOffsetChanged(event, id){
       this.pause()
       for (const i in this.pendulums) {
         if (this.pendulums[i].id === id) {
           this.pendulums[i].angular_offset = event.target.valueAsNumber
+          this.pendulums[i].curr_angoff = event.target.valueAsNumber
           this.calculateNewXYwithAngularOffset(id)
+          await this.setStartPos()
           break
         }
       }
@@ -117,7 +119,11 @@ export default {
     onMassChanged(event, id) {
       this.pause()
       for (const i in this.pendulums) {
-        if (this.pendulums[i].id === id) this.pendulums[i].mass = event.target.valueAsNumber
+        if (this.pendulums[i].id === id) {
+          this.pendulums[i].mass = event.target.valueAsNumber
+          this.setStartPos()
+          break
+        }
       }
     },
     onStringLengthChanged(event, id) {
@@ -131,6 +137,7 @@ export default {
           pendulum.org_posx  = newCoor.x
           pendulum.curr_posy = newCoor.y
           pendulum.org_posy  = newCoor.y
+          this.setStartPos()
           break
         }
       }
@@ -138,7 +145,10 @@ export default {
     onRadiusChanged(event, id) {
       this.pause()
       for (const i in this.pendulums) {
-        if (this.pendulums[i].id === id) this.pendulums[i].radius = event.target.valueAsNumber
+        if (this.pendulums[i].id === id) {
+          this.pendulums[i].radius = event.target.valueAsNumber
+          this.setStartPos()
+        }
       }
     },
     getDistance(x1, y1, x2, y2) {
@@ -150,7 +160,7 @@ export default {
       const dx = x2 - x1
       const dy = y2 - y1
       const angleRadians = Math.atan2(dy, dx)
-      return (angleRadians * (180 / Math.PI)) - 90.0 //the -90 is to make the angle relative where straight down is zero degrees
+      return (angleRadians * (180 / Math.PI))//  - 90.0 //the -90 is to make the angle relative where straight down is zero degrees
     },
     async updateXY(id, x, y) {
       //console.log('updateXY', id, x, y)
@@ -167,6 +177,7 @@ export default {
           }
           pendulum.string_length = this.getDistance(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, pendulum.org_posy)
           pendulum.angular_offset = this.getAngularOffset(pendulum.anchorX, pendulum.anchorY, pendulum.org_posx, pendulum.org_posy)
+          pendulum.curr_angoff = pendulum.angular_offset
           this.setStartPos()
           break
         }
@@ -190,6 +201,7 @@ export default {
           pendulum.anchorX = event.target.valueAsNumber
           this.pendulums[i].curr_posx -= delta
           this.pendulums[i].org_posx  -= delta
+          this.setStartPos()
           break
         }
       }
@@ -232,19 +244,6 @@ export default {
       } catch (err) {
         console.error(err)
       }
-      //if (this.interval) return
-      //this.interval = setInterval(() => {
-      //  for (const i in this.pendulums) {
-      //    //base formula just to animate the pendulum just to prove the UI works, will remove later.
-      //    const torque = -this.pendulums[i].string_length * this.gravity * Math.sin(this.pendulums[i].curr_angle)
-      //    const angularAcceleration = torque / (this.pendulums[i].string_length * this.pendulums[i].string_length)
-      //    this.pendulums[i].curr_angleVel += angularAcceleration
-      //    this.pendulums[i].curr_angle += this.pendulums[i].curr_angleVel
-      //    this.pendulums[i].curr_posx = this.pendulums[i].org_posx + this.pendulums[i].string_length * Math.sin(this.pendulums[i].curr_angle)
-      //    this.pendulums[i].curr_posy = this.pendulums[i].org_posy + this.pendulums[i].string_length * Math.cos(this.pendulums[i].curr_angle)
-      //  }
-      //  //get updated positions from processes
-      //}, 16.7) //16.7 for about 60 fps
     },
     async pause () {
       console.log('pause')
@@ -259,10 +258,7 @@ export default {
       } catch (err) {
         console.error(err)
       }
-      //if (this.interval) {
-      //  clearInterval(this.interval)
-      //  this.interval = null
-      //}
+
     },
     async reset() {
       console.log('reset')
@@ -278,17 +274,6 @@ export default {
         console.error(err)
       }
       
-      //if (this.interval) {
-      //  clearInterval(this.interval)
-      //  this.interval = null
-      //}
-      //for (const i in this.pendulums) {
-      //  this.pendulums[i].curr_posx = this.pendulums[i].org_posx
-      //  this.pendulums[i].curr_posy = this.pendulums[i].org_posy
-      //  this.pendulums[i].curr_angle = this.pendulums[i].org_angle
-      //  this.pendulums[i].curr_angoff this.pendulums[i].angular_offset
-      //  //this.pendulums[i].curr_angularVel = 0
-      //}
     },
     initPendulumSketch() {
       let self = this

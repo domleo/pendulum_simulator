@@ -13,7 +13,7 @@ function log(message) {
   }
 }
 
-const g = 9.81
+const g = 0.4//9.81
 
 class StateMachine {
   constructor() {
@@ -41,14 +41,27 @@ class StateMachine {
   step(dt) {
 
     // Using simple Euler's method for integration
-    const alpha = this.getAngularAcceleration(this.theta) //-(g / this.curr_data.string_length) * this.theta; // Angular acceleration
-    this.theta += this.omega * dt;
-    this.omega += alpha * dt;
+    ///this.getAngularAcceleration(this.theta)
+    //const alpha =  -(g / this.curr_data.string_length) * this.theta; // Angular acceleration
+    //this.theta += this.omega * dt;
+    //this.omega += alpha * dt;
+    //// Convert polar to Cartesian coordinates
+    //this.curr_data.curr_posx = this.curr_data.anchorX + this.curr_data.string_length * Math.sin(this.theta);
+    //this.curr_data.curr_posy = this.curr_data.anchorY + this.curr_data.string_length * Math.cos(this.theta);
+    //this.curr_data.curr_angoff = this.theta * (180/Math.PI)
 
-    // Convert polar to Cartesian coordinates
-    this.curr_data.curr_posx = this.curr_data.anchorX + this.curr_data.string_length * Math.sin(this.theta);
-    this.curr_data.curr_posy = this.curr_data.anchorY + this.curr_data.string_length * Math.cos(this.theta);
-    this.curr_data.curr_angoff = this.theta
+    this.curr_data.curr_posx = this.curr_data.anchorX + this.curr_data.string_length * Math.sin(this.theta)
+    this.curr_data.curr_posy = this.curr_data.anchorY + this.curr_data.string_length * Math.cos(this.theta)
+
+    const momentOfInertia = this.curr_data.mass * this.curr_data.string_length * this.curr_data.string_length;
+    const torque = -(momentOfInertia) * g * Math.sin(this.theta) 
+    const angularAcc = torque / momentOfInertia //(this.curr_data.string_length * this.curr_data.string_length)
+
+    this.angleVelo += angularAcc
+    this.theta += this.angleVelo
+    this.curr_data.curr_angoff = this.theta * (180/Math.PI)
+
+    //this.angleVelo *= 0.99
   }
 
   async nextState() {
@@ -103,7 +116,9 @@ class StateMachine {
     this.start_data = start_data
     this.curr_data = start_data
     this.theta = Math.atan2(this.curr_data.curr_posy - this.curr_data.anchorY, this.curr_data.curr_posx - this.curr_data.anchorX);
+    //this.curr_data.curr_angoff = this.theta
     this.omega = 0;  // Initial angular velocity
+    this.angleVelo = 0;
   }
 
   start_sim(){
