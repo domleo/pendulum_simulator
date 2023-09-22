@@ -83,13 +83,12 @@ class StateMachine {
         break
       case 'step':
         //log('State : step')
-        this.currentState = 'collison_detection'
+        if (this.currentState !== 'idle') this.currentState = 'collison_detection'
         this.step(0.01) //because of 10Hz
         mqtt.publish(`${process.env.NAME}/current`, JSON.stringify(this.curr_data))
         break
       case 'collison_detection':
         //log('State : collison_detection')
-        
         const req1 = axios.get('http://backend1:3001/api/get_position')
         const req2 = axios.get('http://backend2:3002/api/get_position')
         const req3 = axios.get('http://backend3:3003/api/get_position')
@@ -114,11 +113,11 @@ class StateMachine {
             }
           }
         }
-        this.currentState = 'wait'
+        if (this.currentState !== 'idle') this.currentState = 'wait'
         break
       case 'wait':
         //log('State : wait')
-        this.currentState = 'step'
+        if (this.currentState !== 'idle') this.currentState = 'step'
         await sleep(10) //10Hz
         break
       case 'pause':
