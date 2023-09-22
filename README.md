@@ -17,7 +17,7 @@ You'll have to move the pendulums, there default positions are straight down, so
 
 ## Things that don't work correctly or I was too pressed for time
 
-- I didn't get time to work out immediate neighbors for the collision detection, so instead all pendulums check all other pendulums positions.
+- I didn't get time to work out immediate neighbors for the collision detection, so instead all pendulums check all other pendulums positions. This caused a race condition where all the process would detect the collision and proceed to SEND stop and RESTART, which I'm not confident I'm handling correctly.
 - I could better optimizes all the api calls the frontend makes. Currently, changing any data from any pendulum forces an update to all the backends.
 - Had a lot of difficult managing the angular offset between the frontend and the backend and in hindsight, I probably did not need to pass it to the backend.
 - I did the frontend in Vue.js since that is a framework I'm comfortable with. But I admit it had been a while and the frontend is basically all in one component.
