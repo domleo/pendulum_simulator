@@ -8,13 +8,30 @@ You'll need dockerr and docker compose to run the project. But everything should
 > docker compose up --build
 ```
 
-Once the project is running on your local system, open a browser and go to [http://localhost:3000/]
+If using windows, I had difficulties with file permissions, but hopefully it should work. Deffinitly works on Ubuntu. Might also work on OSX.
 
-## Things that don't work correctly
+Once the project is running on your local system, open a browser and go to [http://localhost:3000/].
+You'll have to move the pendulums, there default positions are straight down, so they had no momentum.
 
-- I didn't get time to work out immediate neighbors for the collision detection, so instead all pendulums check all other pendulums positions
+- Other behaviors, modifing any data on the frontend, automatically pauses the simulation.
 
-## breaking down tasks
+## Things that don't work correctly or I was too pressed for time
+
+- I didn't get time to work out immediate neighbors for the collision detection, so instead all pendulums check all other pendulums positions.
+- I could better optimizes all the api calls the frontend makes. Currently, changing any data from any pendulum forces an update to all the backends.
+- Had a lot of difficult managing the angular offset between the frontend and the backend and in hindsight, I probably did not need to pass it to the backend.
+- I did the frontend in Vue.js since that is a framework I'm comfortable with. But I admit it had been a while and the frontend is basically all in one component.
+
+## REST Api
+
+- '/'                 - GET  --  Just a heartbeat, not used
+- '/api/set_starting' - POST --  Sets all the starting positions for a pendulum
+- '/api/get_position' - GET  --  Gets the positional data of the pendulum
+- '/api/start'        - POST --  Starts the simulation for a pendulum
+- '/api/pause'        - POST --  Pauses the simulation for a pendulum
+- '/api/reset'        - POST --  Restarts the data for a pendulum, making it ready to start the simulation from where it started
+
+### breaking down tasks
 
 - rest intface for setup of pendulums
   - angular offset
@@ -41,7 +58,7 @@ Once the project is running on your local system, open a browser and go to [http
 - After a STOP, wait 5 seconds and RESTART
 - RESTART brings all pendulums back to starting configurations
 
-## notes
+### notes
 
 - 5 pendulums, each with a node process
 - each process knows how to contact neighbors with config and
@@ -62,8 +79,3 @@ Once the project is running on your local system, open a browser and go to [http
 - updating the radius should update the string length (no need, we will be calculating that the center of the mass is where the string is connected)
 - updating the anchorx should update the x coordinate of the pendulum (i.e. it follows, else we need to update the string length and angular offset)
 
-## Docker
-
-``` bash
-docker compose up --build
-```
