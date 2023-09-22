@@ -62,7 +62,6 @@ export default {
     }
   },
   mounted() {
-    //this.setStartPos()
     this.initPendulumSketch(); //start drawing right away
     //this is continuosly get the positions of the pendulums, regardless if the animation is in effect
     this.interval = setInterval(() => {
@@ -160,7 +159,7 @@ export default {
       const dx = x2 - x1
       const dy = y2 - y1
       const angleRadians = Math.atan2(dy, dx)
-      return (angleRadians * (180 / Math.PI))//  - 90.0 //the -90 is to make the angle relative where straight down is zero degrees
+      return (angleRadians * (180 / Math.PI))
     },
     async updateXY(id, x, y) {
       //console.log('updateXY', id, x, y)
@@ -209,12 +208,12 @@ export default {
     async setStartPos() {
       try {
         const req1 = axios.post('http://localhost:3001/api/set_starting', this.pendulums[0])
-        await Promise.all([req1])
-        //const req2 = axios.post('http://localhost:3002/api/set_starting', this.pendulums[1])
-        //const req3 = axios.post('http://localhost:3003/api/set_starting', this.pendulums[2])
-        //const req4 = axios.post('http://localhost:3004/api/set_starting', this.pendulums[3])
-        //const req5 = axios.post('http://localhost:3005/api/set_starting', this.pendulums[4])
-        //await Promise.all([req1, req2, req3, req4, req5])
+        //await Promise.all([req1])
+        const req2 = axios.post('http://localhost:3002/api/set_starting', this.pendulums[1])
+        const req3 = axios.post('http://localhost:3003/api/set_starting', this.pendulums[2])
+        const req4 = axios.post('http://localhost:3004/api/set_starting', this.pendulums[3])
+        const req5 = axios.post('http://localhost:3005/api/set_starting', this.pendulums[4])
+        await Promise.all([req1, req2, req3, req4, req5])
       } catch (err) {
         console.error(err)
       }
@@ -222,9 +221,17 @@ export default {
     async getPos() {
       try {
         const req1 = axios.get('http://localhost:3001/api/get_position')
-        const [res1] = await Promise.all([req1])
+        const req2 = axios.get('http://localhost:3002/api/get_position')
+        const req3 = axios.get('http://localhost:3003/api/get_position')
+        const req4 = axios.get('http://localhost:3004/api/get_position')
+        const req5 = axios.get('http://localhost:3005/api/get_position')
+        const [res1, res2, res3, res4, res5] = await Promise.all([req1, req2, req3, req4, req5])
         //console.log(res1)
         this.pendulums[0] = res1.data
+        this.pendulums[1] = res2.data
+        this.pendulums[2] = res3.data
+        this.pendulums[3] = res4.data
+        this.pendulums[4] = res5.data
       } catch (err) {
         console.error(err)
       }
@@ -235,12 +242,12 @@ export default {
         //await this.setStartPos()
 
         const reqStart1 = axios.post('http://localhost:3001/api/start')
-        await Promise.all([reqStart1])
-        //const reqStart2 = axios.post('http://localhost:3002/api/start')
-        //const reqStart3 = axios.post('http://localhost:3003/api/start')
-        //const reqStart4 = axios.post('http://localhost:3004/api/start')
-        //const reqStart5 = axios.post('http://localhost:3005/api/start')
-        //await Promise.all([reqStart1, reqStart2, reqStart3, reqStart4, reqStart5])
+        //await Promise.all([reqStart1])
+        const reqStart2 = axios.post('http://localhost:3002/api/start')
+        const reqStart3 = axios.post('http://localhost:3003/api/start')
+        const reqStart4 = axios.post('http://localhost:3004/api/start')
+        const reqStart5 = axios.post('http://localhost:3005/api/start')
+        await Promise.all([reqStart1, reqStart2, reqStart3, reqStart4, reqStart5])
       } catch (err) {
         console.error(err)
       }
@@ -249,12 +256,12 @@ export default {
       console.log('pause')
       try {
         const req1 = axios.post('http://localhost:3001/api/pause')
-        await Promise.all([req1])
-        //const req2 = axios.post('http://localhost:3002/api/pause')
-        //const req3 = axios.post('http://localhost:3003/api/pause')
-        //const req4 = axios.post('http://localhost:3004/api/pause')
-        //const req5 = axios.post('http://localhost:3005/api/pause')
-        //await Promise.all([req1, req2, req3, req4, req5])
+        //await Promise.all([req1])
+        const req2 = axios.post('http://localhost:3002/api/pause')
+        const req3 = axios.post('http://localhost:3003/api/pause')
+        const req4 = axios.post('http://localhost:3004/api/pause')
+        const req5 = axios.post('http://localhost:3005/api/pause')
+        await Promise.all([req1, req2, req3, req4, req5])
       } catch (err) {
         console.error(err)
       }
@@ -264,12 +271,12 @@ export default {
       console.log('reset')
       try {
         const req1 = axios.post('http://localhost:3001/api/reset')
-        await Promise.all([req1])
-        //const req2 = axios.post('http://localhost:3002/api/reset')
-        //const req3 = axios.post('http://localhost:3003/api/reset')
-        //const req4 = axios.post('http://localhost:3004/api/reset')
-        //const req5 = axios.post('http://localhost:3005/api/reset')
-        //await Promise.all([req1, req2, req3, req4, req5])
+        //await Promise.all([req1])
+        const req2 = axios.post('http://localhost:3002/api/reset')
+        const req3 = axios.post('http://localhost:3003/api/reset')
+        const req4 = axios.post('http://localhost:3004/api/reset')
+        const req5 = axios.post('http://localhost:3005/api/reset')
+        await Promise.all([req1, req2, req3, req4, req5])
       } catch (err) {
         console.error(err)
       }

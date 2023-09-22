@@ -12,6 +12,8 @@ Once the project is running on your local system, open a browser and go to [http
 
 ## Things that don't work correctly
 
+- I didn't get time to work out immediate neighbors for the collision detection, so instead all pendulums check all other pendulums positions
+
 ## breaking down tasks
 
 - rest intface for setup of pendulums
